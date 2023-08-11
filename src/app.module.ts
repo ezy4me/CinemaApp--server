@@ -8,9 +8,21 @@ import { MoviesModule } from './movies/movies.module';
 import { HallsModule } from './halls/halls.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, LoyaltyModule, MoviesModule, HallsModule, TicketsModule, SessionsModule],
+  imports: [
+    DatabaseModule,
+    UsersModule,
+    LoyaltyModule,
+    MoviesModule,
+    HallsModule,
+    TicketsModule,
+    SessionsModule,
+    AuthModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

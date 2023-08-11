@@ -22,6 +22,13 @@ CREATE TABLE "Role" (
 );
 
 -- CreateTable
+CREATE TABLE "Token" (
+    "token" TEXT NOT NULL,
+    "exp" TIMESTAMP(3) NOT NULL,
+    "userId" INTEGER NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "LoyaltyCard" (
     "id" SERIAL NOT NULL,
     "number" TEXT NOT NULL,
@@ -219,6 +226,9 @@ CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Token_token_key" ON "Token"("token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "LoyaltyCard_number_key" ON "LoyaltyCard"("number");
 
 -- CreateIndex
@@ -253,6 +263,9 @@ CREATE UNIQUE INDEX "SessionType_name_key" ON "SessionType"("name");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LoyaltyCard" ADD CONSTRAINT "LoyaltyCard_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
