@@ -1,29 +1,53 @@
-import { Body, Post, Get, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Post,
+  Get,
+  Param,
+  Delete,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto';
+import { UserResponse } from './responses';
+import { CurrentUser } from '@common/decorators';
+import { JwtPayload } from '@auth/interfaces';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  createUser(@Body() dto: CreateUserDto) {
-    return this.userService.save(dto);
+  async createUser(@Body() dto: CreateUserDto) {
+    const user = await this.userService.save(dto);
+    return new UserResponse(user);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAllUsers() {
-    return this.userService.findAll();
+  async findAllUsers() {
+    const users = await this.userService.findAll();
+    const userResponses = users.map((user) => new UserResponse(user));
+    return userResponses;
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':email')
-  findOneUser(@Param('email') email: string) {
-    return this.userService.findOne(email);
+  async findOneUser(@Param('email') email: string) {
+    const user = await this.userService.findOne(email);
+    return new UserResponse(user);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Delete(':id')
-  deleteUser(@Param('id') id: number) {
-    return this.userService.delete(id);
+  async deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const deletedUser = await this.userService.delete(id, user);
+    return new UserResponse(deletedUser);
   }
 }

@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { JwtPayload } from '@auth/interfaces';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { User, Role } from '@prisma/client';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -33,7 +34,11 @@ export class UsersService {
     });
   }
 
-  async delete(id: number) {
+  async delete(id: number, user: JwtPayload) {
+    if (user.id !== id && !(user.role === 'ADMIN')) {
+      throw new ForbiddenException();
+    }
+
     return this.databaseService.user.delete({
       where: { id },
     });
