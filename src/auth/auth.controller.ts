@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   HttpStatus,
+  Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,12 +10,12 @@ import { Body, Get, Post } from '@nestjs/common';
 import { LoginDto, RegisterDto } from './dto';
 import { AuthService } from './auth.service';
 import { Tokens } from './interfaces';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { Cookie } from '@common/decorators';
+import { Cookie, Public, UserAgent } from '@common/decorators';
 
 const REFRESH_TOKEN = 'refreshtoken';
-
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -35,8 +36,12 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() dto: LoginDto, @Res() res: Response) {
-    const tokens = await this.authService.login(dto);
+  async login(
+    @Body() dto: LoginDto,
+    @Res() res: Response,
+    @UserAgent() agent: string,
+  ) {
+    const tokens = await this.authService.login(dto, agent);
     if (!tokens) {
       throw new BadRequestException(
         `Не удалось войти с данными ${JSON.stringify(dto)}`,
@@ -49,12 +54,13 @@ export class AuthController {
   async refreshTokens(
     @Cookie(REFRESH_TOKEN) refreshToken: string,
     @Res() res: Response,
+    @UserAgent() agent: string,
   ) {
     if (!refreshToken) {
       throw new UnauthorizedException();
     }
 
-    const tokens = await this.authService.refreshTokens(refreshToken);
+    const tokens = await this.authService.refreshTokens(refreshToken, agent);
 
     if (!tokens) {
       throw new UnauthorizedException();
@@ -74,6 +80,9 @@ export class AuthController {
         this.configService.get('NODE_ENV', 'development') === 'production',
       path: '/',
     });
-    res.status(HttpStatus.CREATED).json({ accesToken: tokens.accesToken });
+    res.status(HttpStatus.CREATED).json({
+      accesToken: tokens.accesToken,
+      refreshToken: tokens.refreshToken,
+    });
   }
 }
