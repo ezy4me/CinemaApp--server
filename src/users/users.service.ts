@@ -1,12 +1,19 @@
 import { JwtPayload } from '@auth/interfaces';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { User, Role } from '@prisma/client';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { DatabaseService } from 'src/database/database.service';
-
+import { Cache } from 'cache-manager';
+import { ConfigService } from '@nestjs/config';
+import { convertToSecondsUtil } from '@common/utils';
 @Injectable()
 export class UsersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly configService: ConfigService,
+  ) {}
 
   async save(user: Partial<User>) {
     const hashedPassword = this.hashPassword(user.password);
@@ -28,16 +35,36 @@ export class UsersService {
     return this.databaseService.user.findMany();
   }
 
-  async findOne(email: string): Promise<User | null> {
-    return this.databaseService.user.findUnique({
-      where: { email },
-    });
+  async findOne(email: string, isReset = false): Promise<User | null> {
+    if (isReset) {
+      await this.cacheManager.del(email);
+    }
+
+    const user = await this.cacheManager.get<User>(email);
+    if (!user) {
+      const user = await this.databaseService.user.findUnique({
+        where: { email },
+      });
+      if (!user) {
+        return null;
+      }
+
+      await this.cacheManager.set(
+        email,
+        user,
+        convertToSecondsUtil(this.configService.get('JWT_EXP')),
+      );
+      return user;
+    }
+    return user;
   }
 
   async delete(id: number, user: JwtPayload) {
     if (user.id !== id && !(user.role === 'ADMIN')) {
       throw new ForbiddenException();
     }
+
+    await Promise.all([this.cacheManager.del(user.email)]);
 
     return this.databaseService.user.delete({
       where: { id },
