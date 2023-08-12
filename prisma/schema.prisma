@@ -35,10 +35,10 @@ model Role {
 }
 
 model Token {
-  token  String   @unique
-  exp    DateTime
-  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
+  token     String   @unique
+  exp       DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
   userAgent String
 }
 

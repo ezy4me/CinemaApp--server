@@ -136,4 +136,8 @@ export class AuthService {
 
     return newToken;
   }
+
+  deleteRefreshToken(token: string) {
+    return this.databaseService.token.delete({ where: { token } });
+  }
 }
