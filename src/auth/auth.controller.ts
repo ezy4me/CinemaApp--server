@@ -3,7 +3,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   HttpStatus,
-  Req,
   Res,
   UnauthorizedException,
   UseInterceptors,
@@ -12,7 +11,7 @@ import { Body, Get, Post } from '@nestjs/common';
 import { LoginDto, RegisterDto } from './dto';
 import { AuthService } from './auth.service';
 import { Tokens } from './interfaces';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Cookie, Public, UserAgent } from '@common/decorators';
 import { UserResponse } from 'src/users/responses';

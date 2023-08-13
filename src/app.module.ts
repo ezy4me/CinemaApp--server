@@ -12,6 +12,9 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { ActorsModule } from './actors/actors.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -24,6 +27,11 @@ import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
     SessionsModule,
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    ActorsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+      serveRoot: '/static/images',
+    }),
   ],
   controllers: [AppController],
   providers: [
