@@ -22,6 +22,7 @@ export class HallStatusesService {
       await this.databaseService.hallStatus.findUnique({
         where: { id },
       });
+
     if (!hallStatus) {
       throw new NotFoundException(`Status with id ${id} not found`);
     }
@@ -34,6 +35,7 @@ export class HallStatusesService {
       await this.databaseService.hallStatus.findUnique({
         where: { name },
       });
+
     if (hallStatus) {
       throw new NotFoundException(`Status with name "${name}" is exist`);
     }
