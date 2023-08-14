@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { MovieCountryService } from './movie-country.service';
-import { MovieCountryDto } from '../dto/movie-country.dto';
+import { MovieCountryDto } from '../dto';
 import { MovieCountry } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUpload } from '@common/decorators';

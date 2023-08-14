@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MovieCountry } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
-import { MovieCountryDto } from '../dto/movie-country.dto';
+import { MovieCountryDto } from '../dto';
 import { DeleteImageUtil } from '@common/utils';
 
 @Injectable()
