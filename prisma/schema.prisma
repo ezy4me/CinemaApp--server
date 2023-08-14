@@ -123,7 +123,7 @@ model Cinema {
   id      Int    @id @default(autoincrement())
   name    String
   address String
-  Phone   String
+  phone   String
   email   String
   hall    Hall[]
 }

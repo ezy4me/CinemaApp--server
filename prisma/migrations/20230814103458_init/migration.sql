@@ -25,7 +25,8 @@ CREATE TABLE "Role" (
 CREATE TABLE "Token" (
     "token" TEXT NOT NULL,
     "exp" TIMESTAMP(3) NOT NULL,
-    "userId" INTEGER NOT NULL
+    "userId" INTEGER NOT NULL,
+    "userAgent" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -116,7 +117,7 @@ CREATE TABLE "Cinema" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "Phone" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
     "email" TEXT NOT NULL,
 
     CONSTRAINT "Cinema_pkey" PRIMARY KEY ("id")
@@ -265,7 +266,7 @@ CREATE UNIQUE INDEX "SessionType_name_key" ON "SessionType"("name");
 ALTER TABLE "User" ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LoyaltyCard" ADD CONSTRAINT "LoyaltyCard_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

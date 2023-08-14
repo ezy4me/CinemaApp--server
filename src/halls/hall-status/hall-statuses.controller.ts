@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { HallStatusesService } from './hall-statuses.service';
 import { HallStatus } from '@prisma/client';
-import { HallStatusDto } from './dto';
+import { HallStatusDto } from '../dto';
 
 @Controller('halls/status')
 export class HallStatusesController {

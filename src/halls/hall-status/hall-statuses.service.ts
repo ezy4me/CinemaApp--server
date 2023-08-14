@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { HallStatusDto } from './dto';
+import { HallStatusDto } from '../dto';
 import { HallStatus } from '@prisma/client';
 
 @Injectable()
