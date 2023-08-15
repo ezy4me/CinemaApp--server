@@ -44,10 +44,7 @@ export class ActorsController {
 
   @Delete(':id')
   async deleteActor(@Param('id', ParseIntPipe) id: number): Promise<Actor> {
-    const actor = await this.actorService.findOneById(id);
-    if (actor) {
-      return this.actorService.delete(id);
-    }
+    return this.actorService.delete(id);
   }
 
   @Put(':id')

@@ -40,15 +40,19 @@ export class ActorsService {
   }
 
   async delete(id: number): Promise<Actor> {
-    const deleted: Actor = await this.databaseService.actor.delete({
-      where: { id },
-    });
+    const actor = await this.findOneById(id);
 
-    if (deleted) {
-      await DeleteImageUtil('actors', deleted.image);
+    if (actor) {
+      const deleted: Actor = await this.databaseService.actor.delete({
+        where: { id },
+      });
+
+      if (deleted) {
+        await DeleteImageUtil('actors', deleted.image);
+      }
+
+      return deleted;
     }
-
-    return deleted;
   }
 
   async update(
@@ -56,28 +60,24 @@ export class ActorsService {
     dto: UpdateActorDto,
     imageConfig: ImageConfig,
   ): Promise<Actor> {
-    const actor = await this.databaseService.actor.findUnique({
-      where: { id },
-    });
+    const actor = await this.findOneById(id);
 
-    if (!actor) {
-      throw new NotFoundException(`Actor with id ${id} not found`);
+    if (actor) {
+      dto.age = parseInt(dto.age as any);
+
+      const updatedActor = await this.databaseService.actor.update({
+        where: { id },
+        data: {
+          ...dto,
+          image: imageConfig.imageName,
+        },
+      });
+
+      await DeleteImageUtil('actors', actor.image);
+
+      fs.writeFileSync(imageConfig.imagePath, imageConfig.imageFile.buffer);
+
+      return updatedActor;
     }
-
-    dto.age = parseInt(dto.age as any);
-
-    const updatedActor = await this.databaseService.actor.update({
-      where: { id },
-      data: {
-        ...dto,
-        image: imageConfig.imageName,
-      },
-    });
-
-    await DeleteImageUtil('actors', actor.image);
-
-    fs.writeFileSync(imageConfig.imagePath, imageConfig.imageFile.buffer);
-
-    return updatedActor;
   }
 }

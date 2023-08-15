@@ -35,10 +35,7 @@ export class CinemaController {
 
   @Delete(':id')
   async deleteCinema(@Param('id', ParseIntPipe) id: number): Promise<Cinema> {
-    const cinema = await this.cinemaService.findOneById(id);
-    if (cinema) {
-      return this.cinemaService.delete(id);
-    }
+    return this.cinemaService.delete(id);
   }
 
   @Put(':id')
@@ -46,9 +43,6 @@ export class CinemaController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CinemaDto,
   ): Promise<Cinema> {
-    const cinema = await this.cinemaService.findOneById(id);
-    if (cinema) {
-      return this.cinemaService.update(id, dto);
-    }
+    return this.cinemaService.update(id, dto);
   }
 }

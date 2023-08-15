@@ -15,7 +15,7 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {}
 
-  async save(user: Partial<User>) {
+  async save(user: Partial<User>): Promise<User> {
     const hashedPassword = this.hashPassword(user.password);
     return this.databaseService.user.create({
       data: {
@@ -31,8 +31,14 @@ export class UsersService {
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     return this.databaseService.user.findMany();
+  }
+
+  async findOneById(id: number): Promise<User> {
+    return this.databaseService.user.findUnique({
+      where: { id },
+    });
   }
 
   async findOne(email: string, isReset = false): Promise<User | null> {
@@ -59,7 +65,7 @@ export class UsersService {
     return user;
   }
 
-  async delete(id: number, user: JwtPayload) {
+  async delete(id: number, user: JwtPayload): Promise<User> {
     if (user.id !== id && !(user.role === 'ADMIN')) {
       throw new ForbiddenException();
     }
