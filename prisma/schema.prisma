@@ -220,6 +220,6 @@ model SessionType {
   name           String    @unique
   startPointTime DateTime
   endPointTime   DateTime
-  miltiplier     Decimal
+  multiplier     Decimal
   session        Session[]
 }
