@@ -1,5 +1,4 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -22,8 +21,8 @@ export const ImageUpload = createParamDecorator(
       imageName,
     );
 
-    fs.writeFileSync(imagePath, imageFile.buffer);
+    // fs.writeFileSync(imagePath, imageFile.buffer);
 
-    return imageName;
+    return { imageName, imagePath, imageFile };
   },
 );

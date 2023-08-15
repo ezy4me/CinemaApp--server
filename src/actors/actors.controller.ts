@@ -15,6 +15,7 @@ import { CreateActorDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUpload } from '@common/decorators';
 import { UpdateActorDto } from './dto/update-actor.dto';
+import { ImageConfig } from '@common/dto';
 
 @Controller('actors')
 export class ActorsController {
@@ -24,9 +25,9 @@ export class ActorsController {
   @UseInterceptors(FileInterceptor('image'))
   async createActor(
     @Body() dto: CreateActorDto,
-    @ImageUpload('actors') image: string,
+    @ImageUpload('actors') imageConfig: ImageConfig,
   ): Promise<Actor> {
-    return this.actorService.create(dto, image);
+    return this.actorService.create(dto, imageConfig);
   }
 
   @Get()
@@ -54,8 +55,8 @@ export class ActorsController {
   async updateActor(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateActorDto,
-    @ImageUpload('actors') image: string,
+    @ImageUpload('actors') imageConfig: ImageConfig,
   ): Promise<Actor> {
-    return this.actorService.update(id, dto, image);
+    return this.actorService.update(id, dto, imageConfig);
   }
 }

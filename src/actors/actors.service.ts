@@ -4,17 +4,21 @@ import { CreateActorDto } from './dto';
 import { Actor } from '@prisma/client';
 import { UpdateActorDto } from './dto/update-actor.dto';
 import { DeleteImageUtil } from '@common/utils';
+import { ImageConfig } from '@common/dto';
+import * as fs from 'fs';
 
 @Injectable()
 export class ActorsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(dto: CreateActorDto, imageName: string): Promise<Actor> {
+  async create(dto: CreateActorDto, imageConfig: ImageConfig): Promise<Actor> {
     dto.age = parseInt(dto.age as any);
+    fs.writeFileSync(imageConfig.imagePath, imageConfig.imageFile.buffer);
+
     return this.databaseService.actor.create({
       data: {
         ...dto,
-        image: imageName,
+        image: imageConfig.imageName,
       },
     });
   }
@@ -50,7 +54,7 @@ export class ActorsService {
   async update(
     id: number,
     dto: UpdateActorDto,
-    imageName: string,
+    imageConfig: ImageConfig,
   ): Promise<Actor> {
     const actor = await this.databaseService.actor.findUnique({
       where: { id },
@@ -66,9 +70,13 @@ export class ActorsService {
       where: { id },
       data: {
         ...dto,
-        image: imageName,
+        image: imageConfig.imageName,
       },
     });
+
+    await DeleteImageUtil('actors', actor.image);
+
+    fs.writeFileSync(imageConfig.imagePath, imageConfig.imageFile.buffer);
 
     return updatedActor;
   }

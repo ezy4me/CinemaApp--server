@@ -14,18 +14,27 @@ import { MovieDto } from './dto';
 import { Movie } from '@prisma/client';
 import { ImageUpload } from '@common/decorators';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { MovieCountryService } from './movie-country/movie-country.service';
+import { MovieGenreService } from './movie-gnere/movie-genre.service';
+import { MovieAgeRatingService } from './movie-age-rating/movie-age-rating.service';
+import { ImageConfig } from '@common/dto';
 
 @Controller('movies')
 export class MoviesController {
-  constructor(private readonly movieService: MoviesService) {}
+  constructor(
+    private readonly movieService: MoviesService,
+    private readonly movieCountryService: MovieCountryService,
+    private readonly movieGenreService: MovieGenreService,
+    private readonly movieAgeRatingService: MovieAgeRatingService,
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createMovie(
     @Body() dto: MovieDto,
-    @ImageUpload('movies/images') image: string,
+    @ImageUpload('movies/images') imageConfig: ImageConfig,
   ): Promise<Movie> {
-    return this.movieService.create(dto, image);
+    return this.movieService.create(dto, imageConfig);
   }
 
   @Get()
@@ -54,8 +63,8 @@ export class MoviesController {
   async updateMovie(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: MovieDto,
-    @ImageUpload('movies/images') image: string,
+    @ImageUpload('movies/images') imageConfig: ImageConfig,
   ): Promise<Movie> {
-    return this.movieService.update(id, dto, image);
+    return this.movieService.update(id, dto, imageConfig);
   }
 }
