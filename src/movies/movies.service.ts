@@ -84,39 +84,33 @@ export class MoviesService {
       throw new NotFoundException(`Movie with id ${id} not found`);
     }
 
-    let isUnique = true;
-
     if (movie.title !== dto.title) {
       await this.isUnique(dto.title);
-
-      isUnique = false;
     }
 
-    if (isUnique) {
-      dto.duration = parseInt(dto.duration as any);
-      dto.movieCountryId = parseInt(dto.movieCountryId as any);
-      dto.movieGenreId = parseInt(dto.movieGenreId as any);
-      dto.movieAgeRatingId = parseInt(dto.movieAgeRatingId as any);
+    dto.duration = parseInt(dto.duration as any);
+    dto.movieCountryId = parseInt(dto.movieCountryId as any);
+    dto.movieGenreId = parseInt(dto.movieGenreId as any);
+    dto.movieAgeRatingId = parseInt(dto.movieAgeRatingId as any);
 
-      await this.movieCountryService.findOneById(dto.movieCountryId);
-      await this.movieGenreService.findOneById(dto.movieGenreId);
-      await this.movieAgeRatingService.findOneById(dto.movieAgeRatingId);
+    await this.movieCountryService.findOneById(dto.movieCountryId);
+    await this.movieGenreService.findOneById(dto.movieGenreId);
+    await this.movieAgeRatingService.findOneById(dto.movieAgeRatingId);
 
-      const updateMovie = await this.databaseService.movie.update({
-        where: { id },
-        data: {
-          ...dto,
-          previewImage: imageConfig.imageName,
-          previewVideo: imageConfig.imageName,
-        },
-      });
+    const updateMovie = await this.databaseService.movie.update({
+      where: { id },
+      data: {
+        ...dto,
+        previewImage: imageConfig.imageName,
+        previewVideo: imageConfig.imageName,
+      },
+    });
 
-      await DeleteImageUtil('movies/images', movie.previewImage);
+    await DeleteImageUtil('movies/images', movie.previewImage);
 
-      fs.writeFileSync(imageConfig.imagePath, imageConfig.imageFile.buffer);
+    fs.writeFileSync(imageConfig.imagePath, imageConfig.imageFile.buffer);
 
-      return updateMovie;
-    }
+    return updateMovie;
   }
 
   async isUnique(title: string): Promise<boolean> {
